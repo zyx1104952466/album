@@ -18,6 +18,7 @@ public class ServletEncoding {
 			e.printStackTrace();
 		}
 		response.setContentType("text/html; charset=UTF-8");
-		response.setCharacterEncoding("UTF-8");
+		
+//		response.setCharacterEncoding("UTF-8");
 	}
 }
