@@ -1,0 +1,239 @@
+<!DOCTYPE struts PUBLIC
+         "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+         "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<!--不受权限检查的拦截器控制的Action请求配置-->
+	<package name="struts2" extends="struts-default">
+
+		<action name="updatePhoto"
+			class="xgu.jkx.fupeng.action.UpdatePhotoAction">
+			<result name="success" type="redirect-action">
+				showPhotos?albumId=${albumId}
+			</result>
+			<result name="nologin">login.jsp</result>
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="showAlbums"
+			class="xgu.jkx.fupeng.action.ShowAlbumsAction">
+			<result name="login">myalbums.jsp</result>
+			<result name="nologin">showalbums.jsp</result>
+		</action>
+		
+		<action name="searchSuggest"
+			class="xgu.jkx.fupeng.action.SearchSuggestAction">
+		</action>
+		
+		<action name="search"
+			class="xgu.jkx.fupeng.action.SearchAction">
+			<result name="SearchOnAlbum">searchalbum.jsp</result>
+			<result name="SearchOnPhoto">searchphoto.jsp</result>
+			<result name="SearchOnUser">searchuser.jsp</result>
+		</action>
+
+		<action name="photoView"
+			class="xgu.jkx.fupeng.action.PhotoViewAction">
+			<result name="success">photoview.jsp</result>
+			<result name="error">default.jsp</result>
+		</action>
+
+		<action name="showPhotos"
+			class="xgu.jkx.fupeng.action.ShowPhotosAction">
+			<result name="login">myphotos.jsp</result>
+			<result name="nologin">showphotos.jsp</result>
+		</action>
+
+		<action name="gethotusers"
+			class="xgu.jkx.fupeng.action.HotUsersAction">
+			<result name="success">hotuser.jsp</result>
+		</action>
+
+		<action name="gethotphotos"
+			class="xgu.jkx.fupeng.action.HotPhotosAction">
+			<result>hotphoto.jsp</result>
+		</action>
+
+		<action name="gethotalbums"
+			class="xgu.jkx.fupeng.action.HotAlbumsAction">
+			<result>hotalbum.jsp</result>
+		</action>
+
+		<action name="VerifyCode"
+			class="xgu.jkx.fupeng.action.VerifyCodeAction">
+		</action>
+
+		<action name="login"
+			class="xgu.jkx.fupeng.action.LoginAction">
+			<result name="success" type="redirect-action">
+				gethotusers.action
+			</result>
+			<result name="error">error.jsp</result>
+		</action>
+		
+		<action name="login_admin"
+			class="xgu.jkx.fupeng.action.LoginAdminAction">
+			<result name="success" >
+				admin.jsp
+			</result>
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="register"
+			class="xgu.jkx.fupeng.action.RegisterAction">
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="IsUserExist"
+			class="xgu.jkx.fupeng.action.IsUserExistAction">
+		</action>
+
+		<action name="pubComment"
+			class="xgu.jkx.fupeng.action.PubCommentAction">
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="sayFine"
+			class="xgu.jkx.fupeng.action.SayFineAction">
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="nextPhoto"
+			class="xgu.jkx.fupeng.action.GetNextPhotoAction">
+			<result name="error">error.jsp</result>
+		</action>
+
+	</package>
+
+
+	<!--受权限控制的Action请求配置-->
+	<package name="authority" extends="struts-default">
+		<interceptors>
+			<!--定义一个名为authority的拦截器-->
+			<interceptor name="authority"
+				class="xgu.jkx.fupeng.interceptor.AuthorityInterceptor" />
+			<!--定义一个包含权限检查的拦截器栈-->
+			<interceptor-stack name="mydefault">
+				<!--配置内建默认拦截器-->
+				<interceptor-ref name="defaultStack" />
+				<!--配置自定义的拦截器-->
+				<interceptor-ref name="authority" />
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="mydefault" />
+		<!--定义全局Result-->
+		<global-results>
+			<result name="login">error.jsp</result>
+		</global-results>
+
+		<action name="changeMypic"
+			class="xgu.jkx.fupeng.action.ChangeMypicAction">
+			<interceptor-ref name="authority" />
+			<interceptor-ref name="fileUpload">
+				<param name="allowedTypes">
+					image/gif,image/pjpeg,image/JPEG,image/JPG
+				</param>
+				<!-- 上传文件大小限制在2M -->
+				<param name="maximumSize">2097152</param>
+			</interceptor-ref>
+			<interceptor-ref name="defaultStack" />
+			<result name="success">changemypic.jsp</result>
+			<result name="input">changemypic.jsp</result>
+		</action>
+
+		<action name="addAlbum"
+			class="xgu.jkx.fupeng.action.AddAlbumAction">
+			<result name="success" type="chain">showAlbums</result>
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="addPhoto"
+			class="xgu.jkx.fupeng.action.AddPhotoAction">
+			<result name="success">addphoto.jsp</result>
+		</action>
+
+		<action name="uploadPhoto"
+			class="xgu.jkx.fupeng.action.UpLoadPhotoAction">
+			<interceptor-ref name="fileUpload">
+				<param name="allowedTypes">
+					image/pjpeg,image/jpeg,image/gif,image/jpg
+				</param>
+				<param name="maximumSize">20971520</param>
+			</interceptor-ref>
+			<interceptor-ref name="defaultStack" />
+			<result name="success" type="redirect-action">
+				showPhotos?albumId=${albumId}
+			</result>
+			<result name="input">addphoto.jsp</result>
+		</action>
+
+		<action name="deletePhoto"
+			class="xgu.jkx.fupeng.action.DeletePhotoAction">
+			<result name="success" type="chain">showPhotos</result>
+		</action>
+
+		<action name="deleteAlbum"
+			class="xgu.jkx.fupeng.action.DelAlbumAction">
+			<result name="success" type="chain">showAlbums</result>
+			<result name="error">error.jsp</result>
+		</action>
+		
+		<action name="deleteUser"
+			class="xgu.jkx.fupeng.action.DeleteUserAction">
+			<result name="success" type="redirect-action">
+				gethotusers.action</result>
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="editAlbum"
+			class="xgu.jkx.fupeng.action.EditAlbumAction">
+			<result name="success">changealbuminfo.jsp</result>
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="changeAlbumInfo"
+			class="xgu.jkx.fupeng.action.ChangeAlbumInfoAction">
+			<result name="success" type="redirect-action">
+				showAlbums?userId=${userId}
+			</result>
+			<result name="error">error.jsp</result>
+		</action>
+
+		<action name="ChangeUserinfo"
+			class="xgu.jkx.fupeng.action.ChangeUserinfoAction">
+			<result name="error">error.jsp</result>
+			<result name="success" type="redirect-action">
+				gethotusers.action
+			</result>
+		</action>
+
+		<action name="logout"
+			class="xgu.jkx.fupeng.action.LogoutAction">
+			<result name="success" type="redirect-action">
+				gethotusers.action
+			</result>
+		</action>
+
+		<action name="setAlbumFace"
+			class="xgu.jkx.fupeng.action.SetAlbumFaceAction">
+			<result name="success" type="redirect-action">
+				showAlbums?userId=${userId}
+			</result>
+			<result name="error" type="redirect-action">
+				gethotusers.action
+			</result>
+		</action>
+		
+		<action name="comment_*"
+			class="xgu.jkx.fupeng.action.CommentAction" method="{1}">
+			<result name="listComment">
+				commentlist.jsp
+			</result>
+			<result name="delComment" type="redirect-action">
+				comment_getCommentList?currentPage=${currentPage}
+			</result>
+		</action>
+		
+	</package>
+
+</struts>
